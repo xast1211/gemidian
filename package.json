@@ -1,7 +1,7 @@
 {
-  "name": "claudian",
+  "name": "gemidian",
   "version": "2.0.18",
-  "description": "Claudian - Claude Code embedded in Obsidian sidebar",
+  "description": "Gemidian - Google Antigravity & Claude Code embedded in Obsidian sidebar",
   "main": "main.js",
   "scripts": {
     "postinstall": "node scripts/postinstall.mjs",
@@ -17,13 +17,18 @@
     "version": "node scripts/sync-version.js && git add manifest.json"
   },
   "keywords": [
+    "antigravity",
     "claude-code",
     "obsidian",
     "obsidian-plugin",
     "productivity",
     "ide"
   ],
-  "author": "Yishen Tu",
+  "author": "Yishen Tu, Patrick Franke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xast1211/gemidian.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",

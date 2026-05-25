@@ -1,10 +1,10 @@
 {
-  "id": "realclaudian",
-  "name": "Claudian",
+  "id": "gemidian",
+  "name": "Gemidian",
   "version": "2.0.18",
   "minAppVersion": "1.7.2",
-  "description": "Embeds Claude Code, Codex, and other coding agents as AI collaborators in your vault. Your vault becomes their working directory, giving them capabilities for file reads and writes, search, bash commands, and multi-step workflows.",
-  "author": "Yishen Tu",
-  "authorUrl": "https://github.com/YishenTu",
+  "description": "Embeds Google Antigravity, Claude Code, and other agentic coding platforms directly into your vault. Your vault becomes their working directory, supporting interactive tool execution, approvals, and checklists.",
+  "author": "Yishen Tu, Patrick Franke",
+  "authorUrl": "https://github.com/xast1211/gemidian",
   "isDesktopOnly": true
 }
