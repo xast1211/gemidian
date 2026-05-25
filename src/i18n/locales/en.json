@@ -70,7 +70,7 @@
     }
   },
   "settings": {
-    "title": "Claudian Settings",
+    "title": "Gemidian Settings",
     "tabs": {
       "general": "General",
       "claude": "Claude",
@@ -84,7 +84,7 @@
     "models": "Models",
     "experimental": "Experimental",
     "userName": {
-      "name": "What should Claudian call you?",
+      "name": "What should Gemidian call you?",
       "desc": "Your name for personalized greetings (leave empty for generic greetings)"
     },
     "excludedTags": {
@@ -300,7 +300,7 @@
       "desc": "Show raw LaTeX while responses stream, then render math once when each text block completes."
     },
     "chatViewPlacement": {
-      "name": "Open Claudian in",
+      "name": "Open Gemidian in",
       "desc": "Choose where the chat panel opens when it is created",
       "rightSidebar": "Right sidebar",
       "leftSidebar": "Left sidebar",

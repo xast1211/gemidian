@@ -96,6 +96,11 @@ export const OPENCODE_PROVIDER_ICON: ProviderIconSvg = {
   ],
 };
 
+export const GOOGLE_ANTIGRAVITY_PROVIDER_ICON: ProviderIconSvg = {
+  viewBox: '0 0 24 24',
+  path: 'M12 2a1 1 0 0 0-1 1c0 4.97-4.03 9-9 9a1 1 0 0 0 0 2c4.97 0 9 4.03 9 9a1 1 0 0 0 2 0c0-4.03 4.03-9 9-9a1 1 0 0 0 0-2c-4.97 0-9-4.03-9-9a1 1 0 0 0-1-1z',
+};
+
 export interface CreateProviderIconSvgOptions {
   className?: string;
   dataProvider?: string;

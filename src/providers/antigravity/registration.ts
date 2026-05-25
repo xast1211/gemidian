@@ -2,6 +2,7 @@ import type { ProviderRegistration } from '../../core/providers/types';
 import { ANTIGRAVITY_PROVIDER_CAPABILITIES } from './capabilities';
 import { getAntigravityProviderSettings } from './settings';
 import { AntigravityChatRuntime } from './runtime/AntigravityChatRuntime';
+import { GOOGLE_ANTIGRAVITY_PROVIDER_ICON } from '../../shared/icons';
 
 export const antigravityProviderRegistration: ProviderRegistration = {
   displayName: 'Google Antigravity',
@@ -10,7 +11,13 @@ export const antigravityProviderRegistration: ProviderRegistration = {
   capabilities: ANTIGRAVITY_PROVIDER_CAPABILITIES,
   environmentKeyPatterns: [/^GEMINI_/i, /^ANTIGRAVITY_/i],
   chatUIConfig: {
-    getModelOptions: () => [{ value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (Medium)' }],
+    getModelOptions: () => [
+      { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (Medium)', description: 'Fast' },
+      { value: 'gemini-3.5-flash-high', label: 'Gemini 3.5 Flash (High)', description: 'Fast' },
+      { value: 'gemini-3.5-flash-low', label: 'Gemini 3.5 Flash (Low)', description: 'Fast' },
+      { value: 'gemini-3.1-pro-low', label: 'Gemini 3.1 Pro (Low)' },
+      { value: 'gemini-3.1-pro-high', label: 'Gemini 3.1 Pro (High)' },
+    ],
     ownsModel: (model) => model.startsWith('gemini'),
     isAdaptiveReasoningModel: () => false,
     getReasoningOptions: () => [],
@@ -20,6 +27,7 @@ export const antigravityProviderRegistration: ProviderRegistration = {
     applyModelDefaults: () => {},
     normalizeModelVariant: (model) => model,
     getCustomModelIds: () => new Set<string>(),
+    getProviderIcon: () => GOOGLE_ANTIGRAVITY_PROVIDER_ICON,
   },
   settingsReconciler: {
     normalizeModelVariantSettings: () => false,

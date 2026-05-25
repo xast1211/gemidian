@@ -61,13 +61,13 @@ export default class ClaudianPlugin extends Plugin {
       (leaf) => new ClaudianView(leaf, this)
     );
 
-    this.addRibbonIcon('bot', 'Open Claudian', () => {
+    this.addRibbonIcon('bot', 'Open Gemidian', () => {
       void this.activateView();
     });
 
     this.addCommand({
       id: 'open-view',
-      name: 'Open chat view',
+      name: 'Open Gemidian chat view',
       callback: () => {
         void this.activateView();
       },

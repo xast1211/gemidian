@@ -22,6 +22,9 @@ import type {
 } from '../../../core/runtime/types';
 import { ANTIGRAVITY_PROVIDER_CAPABILITIES } from '../capabilities';
 import { AntigravitySubprocess } from './AntigravitySubprocess';
+import { getRuntimeEnvironmentVariables } from '../../../core/providers/providerEnvironment';
+import { getAntigravityProviderSettings } from '../settings';
+import { getHostnameKey } from '../../../utils/env';
 
 export class AntigravityChatRuntime implements ChatRuntime {
   readonly providerId: ProviderId = 'antigravity';
@@ -76,9 +79,15 @@ export class AntigravityChatRuntime implements ChatRuntime {
       return false;
     }
 
-    const command = 'antigravity';
+    const antigravitySettings = getAntigravityProviderSettings(this.plugin.settings);
+    const hostnameKey = getHostnameKey();
+    const command = antigravitySettings.cliPathsByHost[hostnameKey] || antigravitySettings.cliPath || 'antigravity';
+
     const cwd = this.plugin.app.vault.adapter.getName() ?? process.cwd();
-    const env = { ...process.env };
+    const env = {
+      ...process.env,
+      ...getRuntimeEnvironmentVariables(this.plugin.settings, 'antigravity'),
+    };
 
     this.process = new AntigravitySubprocess({
       command,
@@ -121,7 +130,8 @@ export class AntigravityChatRuntime implements ChatRuntime {
     }
 
     // JSON-RPC Query senden
-    const stdinMsg = JSON.stringify({ jsonrpc: '2.0', method: 'query', params: { prompt: turn.prompt }, id: 1 });
+    const model = queryOptions?.model || 'gemini-3.5-flash';
+    const stdinMsg = JSON.stringify({ jsonrpc: '2.0', method: 'query', params: { prompt: turn.prompt, model }, id: 1 });
     this.process.stdin.write(`${stdinMsg}\n`);
 
     const rl = readline.createInterface({ input: this.process.stdout });
