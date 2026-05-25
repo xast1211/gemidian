@@ -129,6 +129,15 @@ export class AntigravityChatRuntime implements ChatRuntime {
       return;
     }
 
+    // Context Tokens schätzen (1 Token ~ 4 Zeichen)
+    let estimatedTokens = Math.round(turn.prompt.length / 4);
+    if (conversationHistory) {
+      for (const msg of conversationHistory) {
+        estimatedTokens += Math.round(msg.content.length / 4);
+      }
+    }
+    let responseContent = '';
+
     // JSON-RPC Query senden
     const model = queryOptions?.model || 'gemini-3.5-flash';
     const stdinMsg = JSON.stringify({ jsonrpc: '2.0', method: 'query', params: { prompt: turn.prompt, model }, id: 1 });
@@ -139,6 +148,20 @@ export class AntigravityChatRuntime implements ChatRuntime {
     let resolveNextChunk: (() => void) | null = null;
     let streamDone = false;
 
+    const removeCloseListener = this.process.onClose((err) => {
+      chunks.push({
+        type: 'error',
+        content: err ? `Antigravity-Fehler: ${err.message}\nBitte überprüfe den CLI-Pfad in den Einstellungen.` : 'Antigravity-Prozess wurde unerwartet beendet.',
+      });
+      chunks.push({ type: 'done' });
+      streamDone = true;
+      if (resolveNextChunk) {
+        resolveNextChunk();
+        resolveNextChunk = null;
+      }
+      rl.close();
+    });
+
     rl.on('line', async (line) => {
       try {
         const msg = JSON.parse(line);
@@ -146,6 +169,9 @@ export class AntigravityChatRuntime implements ChatRuntime {
         // JSON-RPC Notification: Stream Chunk
         if (msg.method === 'stream_chunk') {
           const chunk = msg.params as StreamChunk;
+          if (chunk.type === 'text' || chunk.type === 'thinking') {
+            responseContent += chunk.content;
+          }
           chunks.push(chunk);
           if (resolveNextChunk) {
             resolveNextChunk();
@@ -206,17 +232,32 @@ export class AntigravityChatRuntime implements ChatRuntime {
       }
     });
 
-    while (!streamDone || chunks.length > 0) {
-      if (chunks.length === 0) {
-        await new Promise<void>((resolve) => {
-          resolveNextChunk = resolve;
-        });
-      }
+    try {
+      while (!streamDone || chunks.length > 0) {
+        if (chunks.length === 0) {
+          await new Promise<void>((resolve) => {
+            resolveNextChunk = resolve;
+          });
+        }
 
-      while (chunks.length > 0) {
-        yield chunks.shift()!;
+        while (chunks.length > 0) {
+          yield chunks.shift()!;
+        }
       }
+    } finally {
+      removeCloseListener();
     }
+
+    // Endgültige Context Usage berechnen und senden
+    const finalTokens = estimatedTokens + Math.round(responseContent.length / 4);
+    const usage = {
+      model,
+      inputTokens: Math.round(turn.prompt.length / 4),
+      contextWindow: 1048576,
+      contextTokens: finalTokens,
+      percentage: Math.min(100, Math.max(0, Math.round((finalTokens / 1048576) * 100))),
+    };
+    yield { type: 'usage', usage };
   }
 
   cancel(): void {
@@ -297,9 +338,27 @@ export class AntigravityChatRuntime implements ChatRuntime {
     conversation: Conversation | null;
     sessionInvalidated: boolean;
   }): SessionUpdateResult {
+    // Falls keine Usage existiert, berechnen wir eine initiale Schätzung basierend auf den Nachrichten
+    const msgCount = params.conversation?.messages.length ?? 0;
+    let estimatedTokens = 0;
+    if (params.conversation) {
+      for (const msg of params.conversation.messages) {
+        estimatedTokens += Math.round(msg.content.length / 4);
+      }
+    }
+
+    const usage = params.conversation?.usage || {
+      model: params.conversation?.messages[msgCount - 1]?.displayContent || 'gemini-3.5-flash',
+      inputTokens: 0,
+      contextWindow: 1048576,
+      contextTokens: estimatedTokens,
+      percentage: Math.min(100, Math.max(0, Math.round((estimatedTokens / 1048576) * 100))),
+    };
+
     return {
       updates: {
         sessionId: 'antigravity-session',
+        usage,
       },
     };
   }

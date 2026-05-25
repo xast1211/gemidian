@@ -14,10 +14,18 @@ export interface AntigravityProviderSettings {
   environmentHash: string;
 }
 
+const getDefaultCliPath = (): string => {
+  if (process.platform === 'win32') {
+    const home = process.env.USERPROFILE || 'C:\\Users\\xast';
+    return `${home}\\.gemini\\antigravity-cli\\bin\\agentapi.bat`;
+  }
+  return 'antigravity';
+};
+
 export const DEFAULT_ANTIGRAVITY_PROVIDER_SETTINGS: Readonly<AntigravityProviderSettings> = Object.freeze({
   enabled: true,
   safeMode: 'acceptEdits',
-  cliPath: 'antigravity',
+  cliPath: getDefaultCliPath(),
   cliPathsByHost: {},
   customModels: '',
   lastModel: 'gemini-3.5-flash',
