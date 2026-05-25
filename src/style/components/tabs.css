@@ -52,6 +52,10 @@
   border-color: var(--claudian-brand-opencode, #C8C8C8);
 }
 
+.claudian-tab-badge-streaming[data-provider="antigravity"] {
+  border-color: var(--claudian-brand-antigravity, #4285f4);
+}
+
 .claudian-tab-badge-attention {
   border-color: var(--text-error);
 }
